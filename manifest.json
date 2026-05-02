@@ -1,0 +1,17 @@
+{
+  "name": "Lumina Professional Recorder",
+  "short_name": "Lumina",
+  "description": "Professional Screen & Camera Recorder",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1159/1159784.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

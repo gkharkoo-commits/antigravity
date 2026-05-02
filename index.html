@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina | Professional Screen & Camera Recorder</title>
+    <meta name="description"
+        content="High-end, browser-based screen and camera recording with real-time background effects and PWA support.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- MediaPipe for Background Segmentation -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+</head>
+
+<body class="dark-theme">
+    <div id="app">
+        <!-- Top Bar: Status & Primary Controls -->
+        <header class="top-bar glass">
+            <div class="brand">
+                <button id="btn-mobile-menu" class="icon-btn mobile-only" title="Toggle Menu">
+                    <i class="ph-bold ph-list"></i>
+                </button>
+                <div class="logo"></div>
+                <h1>LUMINA <span>PRO</span></h1>
+            </div>
+
+            <div class="status-center">
+                <div id="recording-indicator" class="status-badge">
+                    <span class="dot"></span>
+                    <span class="label">REC</span>
+                    <span id="timer" class="timer">00:00:00</span>
+                </div>
+                <div id="streaming-indicator" class="status-badge live hidden">
+                    <span class="dot"></span>
+                    <span class="label">LIVE</span>
+                    <span id="stream-timer" class="timer">00:00:00</span>
+                </div>
+            </div>
+
+            <div class="primary-actions">
+                <button id="btn-record" class="action-btn record" title="Start Recording (Ctrl+R)">
+                    <i class="ph-fill ph-circle"></i>
+                    <span>Record</span>
+                </button>
+                <button id="btn-pause" class="action-btn" title="Pause Recording" disabled>
+                    <i class="ph-fill ph-pause"></i>
+                </button>
+                <button id="btn-stop" class="action-btn stop" title="Stop Recording (Ctrl+S)" disabled>
+                    <i class="ph-fill ph-square"></i>
+                </button>
+                <div class="v-divider"></div>
+                <button id="btn-stream" class="action-btn stream" title="Go Live (Requires Backend Bridge)">
+                    <i class="ph-fill ph-broadcast"></i>
+                    <span>Go Live</span>
+                </button>
+            </div>
+
+            <div class="user-actions">
+                <button id="btn-settings" class="icon-btn" title="Settings">
+                    <i class="ph-bold ph-gear-six"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Sidebar: Sources & Scenes -->
+        <aside class="sidebar glass">
+            <section class="panel-section">
+                <div class="section-header">
+                    <h3>Sources</h3>
+                    <div class="section-actions" style="display:flex; gap:0.5rem; align-items:center;">
+                        <button id="btn-quick-start" class="btn-primary-sm"
+                            style="background: var(--accent); border:none; color:white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; cursor:pointer; font-weight:600;">
+                            ⚡ Quick Start
+                        </button>
+                        <button id="btn-add-source" class="mini-btn"><i class="ph-bold ph-plus"></i></button>
+                    </div>
+                </div>
+                <ul id="sources-list" class="sources-list">
+                    <!-- Sources will be injected here -->
+                    <li class="source-item active" data-id="screen">
+                        <i class="ph-bold ph-desktop"></i>
+                        <span class="name">Screen Share</span>
+                        <div class="item-actions">
+                            <button class="toggle-visibility" title="Toggle Visibility"><i
+                                    class="ph-bold ph-eye"></i></button>
+                            <button class="source-settings" title="Source Settings"><i
+                                    class="ph-bold ph-sliders"></i></button>
+                        </div>
+                    </li>
+                    <li class="source-item" data-id="camera">
+                        <i class="ph-bold ph-video-camera"></i>
+                        <span class="name">Webcam</span>
+                        <div class="item-actions">
+                            <button class="toggle-beauty" title="Remini Face Clean (AI Enhancer)"><i
+                                    class="ph-bold ph-magic-wand"></i></button>
+                            <button class="toggle-shape" title="Toggle Shape (Circle/Square)"><i
+                                    class="ph-bold ph-circle"></i></button>
+                            <button class="toggle-visibility" title="Toggle Visibility"><i
+                                    class="ph-bold ph-eye-slash"></i></button>
+                            <button class="source-settings" title="Source Settings"><i
+                                    class="ph-bold ph-sliders"></i></button>
+                        </div>
+                    </li>
+                    <li class="source-item" data-id="mic">
+                        <i class="ph-bold ph-microphone"></i>
+                        <span class="name">Microphone</span>
+                        <div class="item-actions">
+                            <button class="toggle-visibility" title="Toggle Visibility"><i
+                                    class="ph-bold ph-eye-slash"></i></button>
+                            <button class="source-settings" title="Source Settings"><i
+                                    class="ph-bold ph-sliders"></i></button>
+                        </div>
+                    </li>
+                    <li class="source-item" data-id="logo">
+                        <i class="ph-bold ph-sketch-logo"></i>
+                        <span class="name">Logo (Auto)</span>
+                        <div class="item-actions">
+                            <button class="toggle-visibility" title="Toggle Visibility"><i
+                                    class="ph-bold ph-eye"></i></button>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="panel-section audio-mixer">
+                <div class="section-header">
+                    <h3>Audio Mixer</h3>
+                </div>
+                <div class="mixer-item">
+                    <div class="mixer-info">
+                        <span>Desktop Audio</span>
+                        <span class="level-val">-Infinity dB</span>
+                    </div>
+                    <div class="vu-meter">
+                        <div class="vu-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="mixer-item">
+                    <div class="mixer-info">
+                        <span>Microphone</span>
+                        <span class="level-val">-Infinity dB</span>
+                    </div>
+                    <div class="vu-meter">
+                        <div class="vu-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <!-- Main Preview Area -->
+        <main class="preview-area">
+            <div id="canvas-container" class="canvas-container">
+                <canvas id="main-canvas"></canvas>
+
+                <!-- Interaction Overlay for dragging/resizing -->
+                <div id="interaction-layer" class="interaction-layer"></div>
+            </div>
+        </main>
+
+        <!-- Bottom Bar: Timeline & Secondary Info -->
+        <footer class="bottom-bar glass">
+            <div class="system-status">
+                <div class="status-item">
+                    <label>CPU:</label>
+                    <span id="cpu-load">0%</span>
+                </div>
+                <div class="status-item">
+                    <label>FPS:</label>
+                    <span id="render-fps">60</span>
+                </div>
+                <div class="status-item">
+                    <label>BITRATE:</label>
+                    <span id="bitrate-val">0 kbps</span>
+                </div>
+            </div>
+
+            <div class="recording-path">
+                <i class="ph-bold ph-folder-open"></i>
+                <span id="save-location">Downloads/recordings/</span>
+            </div>
+
+            <div class="window-controls">
+                <button id="btn-fullscreen" class="icon-btn"><i class="ph-bold ph-corners-out"></i></button>
+            </div>
+        </footer>
+
+        <!-- Settings Modal (Hidden by default) -->
+        <div id="settings-modal" class="modal-overlay hidden">
+            <div class="modal-content glass">
+                <div class="modal-header">
+                    <h2>Settings</h2>
+                    <button id="btn-close-modal" class="close-btn"><i class="ph-bold ph-x"></i></button>
+                </div>
+                <div class="modal-body">
+                    <nav class="modal-tabs">
+                        <button class="tab-btn active" data-tab="video">Video</button>
+                        <button class="tab-btn" data-tab="audio">Audio</button>
+                        <button class="tab-btn" data-tab="output">Output</button>
+                        <button class="tab-btn" data-tab="hotkeys">Hotkeys</button>
+                    </nav>
+                    <div class="tab-content" id="tab-video">
+                        <div class="setting-row">
+                            <label>Output Resolution</label>
+                            <select id="setting-resolution">
+                                <option value="854x480" selected>480p (Fastest / Low-end PC)</option>
+                                <option value="1280x720">720p (HD)</option>
+                                <option value="1920x1080">1080p (Full HD)</option>
+                                <option value="2560x1440">1440p (2K)</option>
+                                <option value="3840x2160">2160p (4K UHD)</option>
+                            </select>
+                        </div>
+                        <div class="setting-row">
+                            <label>YouTube/Twitch Stream Key</label>
+                            <input type="password" id="setting-stream-key" placeholder="Paste your stream key here..."
+                                style="width:100%; background:rgba(0,0,0,0.3); border:1px solid var(--glass-border); color:white; padding:0.6rem; border-radius:6px; outline:none;">
+                        </div>
+                        <div class="setting-row">
+                            <label>Output FPS</label>
+                            <select id="setting-fps">
+                                <option value="60">60 FPS</option>
+                                <option value="30" selected>30 FPS</option>
+                                <option value="24">24 FPS</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Other tabs will be populated dynamically or as needed -->
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-save-settings" class="btn-primary">Apply Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden Video Elements for processing -->
+        <div class="hidden-videos">
+            <video id="video-source-screen" autoplay playsinline muted></video>
+            <video id="video-source-camera" autoplay playsinline muted></video>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/app.js"></script>
+</body>
+
+</html>

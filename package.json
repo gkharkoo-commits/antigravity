@@ -1,0 +1,13 @@
+{
+  "name": "antigravity-recorder",
+  "version": "1.0.0",
+  "description": "Professional Web Recorder PWA",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "npx serve -p 3000"
+  },
+  "dependencies": {
+    "ws": "^8.20.0"
+  }
+}
