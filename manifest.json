@@ -1,17 +1,27 @@
 {
   "name": "Lumina Professional Recorder",
-  "short_name": "Lumina",
-  "description": "Professional Screen & Camera Recorder",
+  "short_name": "Lumina Pro",
+  "description": "Professional Screen & Camera Recorder for Desktop and Mobile",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#020617",
   "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/1159/1159784.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "screenshots": [
+    {
+      "src": "/banner.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
     }
   ]
 }

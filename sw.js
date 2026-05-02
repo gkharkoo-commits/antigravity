@@ -8,6 +8,7 @@ const STATIC_ASSETS = [
   '/logo.png',
   '/banner.png',
   '/dashboard-bg.png',
+  '/icon-512.png',
   '/js/app.js',
   '/js/MediaEngine.js',
   '/js/SourceManager.js',
